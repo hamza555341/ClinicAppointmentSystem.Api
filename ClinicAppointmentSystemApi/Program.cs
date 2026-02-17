@@ -9,6 +9,7 @@ using ClinicAppointment.Service;
 using ClinicAppointment.Service.Abstraction;
 using ClinicAppointment.Service.IdentityModels;
 using ClinicAppointmentSystemApi.BackgroundJobs;
+using ClinicAppointmentSystemApi.CustomMiddelwares;
 using ClinicAppointmentSystemApi.Extension;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -144,6 +145,7 @@ namespace ClinicAppointmentSystemApi
 
 
             // Configure the HTTP request pipeline.
+            app.UseMiddleware<CustomExceptionHandlerMiddelware>();
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
