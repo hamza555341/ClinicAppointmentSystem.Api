@@ -10,4 +10,8 @@
     <ProjectReference Include="..\ClinicAppointment.Service.Abstraction\ClinicAppointment.Service.Abstraction.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
 </Project>
