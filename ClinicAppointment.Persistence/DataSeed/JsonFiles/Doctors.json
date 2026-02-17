@@ -1,0 +1,41 @@
+[
+  {
+    
+    "Name": "Dr. Ahmed Hassan",
+    "Bio": "Senior consultant cardiologist with over 12 years of clinical experience.",
+    "PictureUrl": "images/doctors/ahmed-hassan.jpg",
+    "ConsultationFees": 500.00,
+    "SpecializationId": 1
+  },
+  {
+    
+    "Name": "Dr. Sara Ali",
+    "Bio": "Dermatology specialist focused on skin allergies and cosmetic treatments.",
+    "PictureUrl": "images/doctors/sara-ali.jpg",
+    "ConsultationFees": 350.00,
+    "SpecializationId": 2
+  },
+  {
+    
+    "Name": "Dr. Mohamed Fathy",
+    "Bio": "Pediatrics consultant caring for infants and children of all ages.",
+    "PictureUrl": "images/doctors/mohamed-fathy.jpg",
+    "ConsultationFees": 400.00,
+    "SpecializationId": 3
+  },
+  {
+    "Name": "Dr. Laila Mahmoud",
+    "Bio": "Orthopedic surgeon specialized in sports injuries and joint replacement.",
+    "PictureUrl": "images/doctors/laila-mahmoud.jpg",
+    "ConsultationFees": 550.00,
+    "SpecializationId": 4
+  },
+  {
+    
+    "Name": "Dr. Omar Khaled",
+    "Bio": "Neurology consultant treating headaches, epilepsy, and nerve disorders.",
+    "PictureUrl": "images/doctors/omar-khaled.jpg",
+    "ConsultationFees": 600.00,
+    "SpecializationId": 5
+  }
+]
