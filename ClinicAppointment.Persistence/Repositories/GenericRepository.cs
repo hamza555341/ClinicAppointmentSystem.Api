@@ -30,18 +30,23 @@ namespace ClinicAppointment.Persistence.Repositories
                  _dbContext.Set<TEntity>().Remove(entity);
 
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? criteria = null, params Expression<Func<TEntity, object>>[] includes)
+        public async Task<IEnumerable<TEntity>> GetAllAsync() => await _dbContext.Set<TEntity>().ToListAsync();
+
+
+
+        public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<TEntity, TKey> Spec)
         {
-            IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+            var EntryPoint = _dbContext.Set<TEntity>();
+            var Query = SpecificationsEvalutor.CreateQuery(EntryPoint, Spec);   
+            return await Query.ToListAsync();
 
-            if (criteria != null)
-                query = query.Where(criteria);
+        }
 
-            if (includes != null && includes.Any())
-                foreach (var include in includes)
-                    query = query.Include(include);
+        public async Task<TEntity?> GetByIdAsync(ISpecification<TEntity, TKey> specifications)
+        {
+            var Query = SpecificationsEvalutor.CreateQuery(_dbContext.Set<TEntity>(), specifications);
+            return await Query.FirstOrDefaultAsync();
 
-            return await query.ToListAsync();
         }
 
         public async Task<TEntity?> GetByIdAsync(TKey id)=>

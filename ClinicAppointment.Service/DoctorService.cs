@@ -2,6 +2,7 @@
 using ClinicAppointment.Domain.Entites.DoctorModule;
 using ClinicAppointment.Domain.Interfaces;
 using ClinicAppointment.Service.Abstraction;
+using ClinicAppointment.Service.Specifications;
 using ClinicAppointment.Shared.Common_Result;
 using ClinicAppointment.Shared.DTOs.DoctorDtos;
 using System;
@@ -60,7 +61,9 @@ namespace ClinicAppointment.Service
         {
             var repo = _unitOfWork.GetRepository<Doctor, int>();
 
-            var Doctors = await repo.GetAllAsync(null,d=>d.Specialization);
+            //var Doctors = await repo.GetAllAsync(null,d=>d.Specialization);
+            var Spec = new DoctorWithSpecializationSpecification();
+            var Doctors = await repo.GetAllAsync(Spec);
 
             return Result<IEnumerable<DoctorDTO>>.Ok(_mapper.Map<IEnumerable<DoctorDTO>>(Doctors));
         }
@@ -69,12 +72,14 @@ namespace ClinicAppointment.Service
         {
             var repo = _unitOfWork.GetRepository<Doctor, int>();
 
-            var Doctor = (await repo.GetAllAsync(d=> d.Id==Id , d => d.Specialization))
-                          .FirstOrDefault(); 
+            //var Doctor = (await repo.GetAllAsync(d=> d.Id==Id , d => d.Specialization))
+            //              .FirstOrDefault(); 
 
+
+          var Spec = new DoctorWithSpecializationSpecification(Id);
+            var Doctor = await repo.GetByIdAsync(Spec);
             if (Doctor is null)
                 return Error.NotFound("Doctor.NotFound", $"Doctor With{Id} Is Not Found");
-
 
             return Result<DoctorDTO>.Ok(_mapper.Map<DoctorDTO>(Doctor));  
 

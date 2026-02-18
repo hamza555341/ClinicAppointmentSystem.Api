@@ -11,9 +11,10 @@ namespace ClinicAppointment.Domain.Interfaces
     public interface IGenericRepository<TEntity, TKey>
         where TEntity : BaseEntity<TKey>
     {
-        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? criteria = null,
-         params Expression<Func<TEntity, object>>[] includes);
+        Task<IEnumerable<TEntity>> GetAllAsync();
         Task<TEntity?> GetByIdAsync(TKey id);
+        Task<TEntity?> GetByIdAsync(ISpecification<TEntity, TKey> specifications);
+        Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<TEntity, TKey> Spec);
         Task AddAsync(TEntity entity);
         void Update(TEntity entity);
         void Delete(TEntity entity);    
