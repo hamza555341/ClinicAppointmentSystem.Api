@@ -13,7 +13,7 @@ namespace ClinicAppointment.Domain.Entites.DoctorModule
         public string Bio { get; set; } = default!;
         public string? PictureUrl { get; set; }
         public decimal ConsultationFees { get; set; } = default!;
-
+        public bool IsActive { get; set; }= true;
 
         public string? IdentityUserId { get; set; }
 

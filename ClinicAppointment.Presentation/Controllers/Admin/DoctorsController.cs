@@ -73,6 +73,26 @@ namespace ClinicAppointment.Presentation.Controllers.Admin
         }
 
 
+        // Put : BaseUrl/api/AdminDoctors/id/Deactivate
+
+        [HttpPut("{id}/deactivate")]
+        public async Task<IActionResult> DeactivateDoctor(int id)
+        {
+            var result = await _doctorService.DeactivateDoctorAsync(id);
+
+            return HandleResult(result);
+
+        }
+
+        // Put : BaseUrl/api/AdminDoctors/id/activate
+
+        [HttpPut("{id}/activate")]
+        public async Task<IActionResult> ActivateDoctor(int id)
+        {
+            var result = await _doctorService.ActivateDoctorAsync(id);
+
+            return HandleResult(result);
+        }
 
 
     }

@@ -42,7 +42,7 @@ namespace ClinicAppointmentSystemApi
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                    Description = "اكتب التوكن هنا بالشكل التالي: Bearer {your token}"
+                    Description = "Write the token here as follows : Bearer {your token}"
                 });
 
                 c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement

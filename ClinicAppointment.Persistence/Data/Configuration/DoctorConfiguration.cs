@@ -45,6 +45,11 @@ namespace ClinicAppointment.Persistence.Data.Configuration
                 .WithOne(a => a.Doctor)
                 .HasForeignKey(a => a.DoctorId);    
 
+            builder.HasQueryFilter(d => d.IsActive);
+
+            builder.Property(d => d.IsActive)
+                .HasDefaultValue(true);
+
 
         }
     }

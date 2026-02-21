@@ -13,6 +13,7 @@ namespace ClinicAppointment.Persistence.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Patient> builder)
         {
+
           builder.Property(p => p.FullName)
                  .IsRequired()
                  .HasColumnType("nvarchar")
@@ -27,8 +28,7 @@ namespace ClinicAppointment.Persistence.Data.Configuration
             builder.HasMany(p => p.Appointments)
                    .WithOne(a => a.Patient)
                    .HasForeignKey(a => a.PatientId);
-                   
-
+                  
 
         }
     }
