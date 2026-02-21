@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using ClinicAppointment.Domain.Entites.AppointmentModule;
 using ClinicAppointment.Domain.Entites.DoctorModule;
 using ClinicAppointment.Domain.Interfaces;
 using ClinicAppointment.Service.Abstraction;
 using ClinicAppointment.Service.Specifications;
 using ClinicAppointment.Shared.Common_Result;
 using ClinicAppointment.Shared.DTOs.DoctorDtos;
+using Microsoft.AspNetCore.Http.HttpResults;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -52,17 +54,60 @@ namespace ClinicAppointment.Service
                             
         }
 
-        public Task<bool> DeleteDoctorAsync(int doctorId)
+        public async Task<Result> DeactivateDoctorAsync(int doctorId)
         {
-            throw new NotImplementedException();
+            var doctorRepo = _unitOfWork.GetRepository<Doctor, int>();
+
+            var doctor = await doctorRepo.GetByIdAsync(doctorId);
+
+            if (doctor is null)
+                return Result.Failure(Error.NotFound("Doctor.NotFound",
+                    $"Doctor with id {doctorId} not found"));
+
+            if (!doctor.IsActive)
+                return Result.Failure(Error.Validation("Doctor.AlreadyInactive",
+                    "Doctor is already inactive"));
+
+            doctor.IsActive = false;
+
+            doctorRepo.Update(doctor);
+
+            var saved = await _unitOfWork.SaveChangesAsync() > 0;
+
+            if (!saved)
+                return Result.Failure( Error.Failure("Doctor.DeactivateFailed"));
+
+            return Result.Ok();
+        }
+
+        public async Task<Result> ActivateDoctorAsync(int doctorId)
+        {
+            var doctorRepo = _unitOfWork.GetRepository<Doctor, int>();
+
+            var doctor = await doctorRepo.GetByIdAsync(doctorId);
+
+            if (doctor is null)
+                return Result.Failure(Error.NotFound("Doctor.NotFound"));
+
+            if (doctor.IsActive)
+                return Result.Failure(Error.Validation("Doctor.AlreadyActive"));
+
+            doctor.IsActive = true;
+
+            doctorRepo.Update(doctor);
+
+            var saved = await _unitOfWork.SaveChangesAsync() > 0;
+
+            if (!saved)
+                return Result.Failure(Error.Failure("Doctor.ActivateFailed"));
+
+            return Result.Ok();
         }
 
         public async Task<Result<IEnumerable<DoctorDTO>>> GetAllDoctorsAsync()
         {
             var repo = _unitOfWork.GetRepository<Doctor, int>();
-
-            //var Doctors = await repo.GetAllAsync(null,d=>d.Specialization);
-            var Spec = new DoctorWithSpecializationSpecification();
+            var Spec = new DoctorWithSpecializationAndAppointmentSpecification();
             var Doctors = await repo.GetAllAsync(Spec);
 
             return Result<IEnumerable<DoctorDTO>>.Ok(_mapper.Map<IEnumerable<DoctorDTO>>(Doctors));
@@ -71,12 +116,7 @@ namespace ClinicAppointment.Service
         public async Task<Result<DoctorDTO>> GetDoctorbyIdAsync(int Id)
         {
             var repo = _unitOfWork.GetRepository<Doctor, int>();
-
-            //var Doctor = (await repo.GetAllAsync(d=> d.Id==Id , d => d.Specialization))
-            //              .FirstOrDefault(); 
-
-
-          var Spec = new DoctorWithSpecializationSpecification(Id);
+            var Spec = new DoctorWithSpecializationAndAppointmentSpecification(Id);
             var Doctor = await repo.GetByIdAsync(Spec);
             if (Doctor is null)
                 return Error.NotFound("Doctor.NotFound", $"Doctor With{Id} Is Not Found");
@@ -118,5 +158,6 @@ namespace ClinicAppointment.Service
             return Result<DoctorDTO>.Ok(_mapper.Map<DoctorDTO>(doctor));
 
         }
+
     }
 }

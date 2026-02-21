@@ -4,6 +4,7 @@ using ClinicAppointment.Domain.Entites.DoctorModule;
 using ClinicAppointment.Domain.Entites.PatientModule;
 using ClinicAppointment.Domain.Interfaces;
 using ClinicAppointment.Service.Abstraction;
+using ClinicAppointment.Service.Specifications;
 using ClinicAppointment.Shared.Common_Result;
 using ClinicAppointment.Shared.DTOs.AppointmentDtos;
 using Microsoft.EntityFrameworkCore;
@@ -34,9 +35,8 @@ namespace ClinicAppointment.Service
 
             var patientRepo =  _unitOfWork.GetRepository<Patient, int>();
 
-            var patient = (await patientRepo.GetAllAsync(p=>p.IdentityUserId==UserId))
-                          .FirstOrDefault();
-
+            var PatientSpec = new PatientByIdentityUserIdSpecification(UserId);
+            var patient = await patientRepo.GetByIdAsync(PatientSpec);
 
             if (patient is null)
                 return Error.NotFound("Patient.NotFound");     
@@ -44,17 +44,17 @@ namespace ClinicAppointment.Service
             var doctorRepo=  _unitOfWork.GetRepository<Doctor,int>();    
             var appointmentRepo= _unitOfWork.GetRepository<Appointment,int>();
 
-          var doctor= (await doctorRepo.GetAllAsync(d => d.Id == dto.DoctorId, d => d.Specialization,d=>d.Appointments))
-                        .FirstOrDefault();
 
+            var Spec= new DoctorWithSpecializationAndAppointmentSpecification(dto.DoctorId);
+            var  doctor= await doctorRepo.GetByIdAsync(Spec);
 
 
             var cairoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
-            // اعتبر الوقت الجاي من المستخدم بتوقيت مصر
+            // suppose the input date is in local time (Egypt time), we need to specify it as Unspecified to prevent automatic conversion
             var localAppointmentTime = DateTime.SpecifyKind(dto.AppointmentDate, DateTimeKind.Unspecified);
 
-            // الوقت الحالي في مصر
+            // Time Now In Cairo
             var nowInCairo = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cairoTimeZone);
 
             if (localAppointmentTime <= nowInCairo)
@@ -62,12 +62,12 @@ namespace ClinicAppointment.Service
                 return Error.Validation("Invalid appointment date", "Appointment date must be in the future");
             }
 
-            // بعد ما نتأكد إنه في المستقبل — نحوله UTC للتخزين
+            // to store It In UTC in database
             var utcDate = TimeZoneInfo.ConvertTimeToUtc(localAppointmentTime, cairoTimeZone);
 
 
             // check if doctor exist
-            if (doctor is null)
+            if (doctor is null|| !doctor.IsActive )
             {
               return Error.NotFound("Doctor not found",$"doctor With{dto.DoctorId} is not found");
             }      
@@ -92,9 +92,6 @@ namespace ClinicAppointment.Service
             if (!IsCreated)
               return Error.Failure("Failed to book appointment",$"An error occurred while booking the appointment");
 
-
-
-
             //  Schedule auto-complete after appointment time
             _backgroundJobService.ScheduleAppointmentCompletion(
                 appointmentToStore.Id,
@@ -113,11 +110,13 @@ namespace ClinicAppointment.Service
         {
 
             var patientRepo = _unitOfWork.GetRepository<Patient, int>();
-
-            var patient = (await patientRepo.GetAllAsync(p => p.IdentityUserId == UserId))
-                          .FirstOrDefault();
-
-
+     
+            var Spec= new PatientByIdentityUserIdSpecification(UserId);
+            var patient= await patientRepo.GetByIdAsync(Spec);
+             if (patient is null)
+             {
+                return Result.Failure(Error.NotFound("Patient not found",$"Patient with user id {UserId} is not found"));
+             }
 
             var Appointment= await _unitOfWork.GetRepository<Appointment,int>()
                                        .GetByIdAsync(AppointmentId);
@@ -233,8 +232,10 @@ namespace ClinicAppointment.Service
 
         public async Task<Result<IEnumerable<AppointmentDTO>>> GetAllAppointmentAsync()
         {
-            var Appointments = await _unitOfWork.GetRepository<Appointment, int>().GetAllAsync
-                    ( null,A => A.Doctor, A => A.Doctor.Specialization);
+ 
+            var Spec= new AppointmentWithDoctorSpecification();
+            var Appointments= await _unitOfWork.GetRepository<Appointment,int>()
+                                               .GetAllAsync(Spec);
 
             var ordered = Appointments.OrderByDescending(a => a.AppointmentDate).ToList();
 
@@ -247,12 +248,14 @@ namespace ClinicAppointment.Service
 
             var patientRepo = _unitOfWork.GetRepository<Patient, int>();
 
-            var patient = (await patientRepo.GetAllAsync(p => p.IdentityUserId == UserId))
-                          .FirstOrDefault();
 
+            var PatientSpec = new PatientByIdentityUserIdSpecification(UserId);
+            var patient= await patientRepo.GetByIdAsync(PatientSpec);
 
-            var Appointments = await _unitOfWork.GetRepository<Appointment, int>().GetAllAsync
-                   (A => A.PatientId == patient!.Id, A => A.Doctor, A => A.Doctor.Specialization);
+            var AppointmentSpec = new AppointmentWithDoctorSpecification(patient!.Id);
+            var Appointments= await _unitOfWork.GetRepository<Appointment,int>().
+                                                    GetAllAsync(AppointmentSpec);
+
 
             var ordered = Appointments.OrderByDescending(a => a.AppointmentDate).ToList();
 
