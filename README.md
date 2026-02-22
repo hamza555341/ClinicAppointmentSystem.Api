@@ -1,9 +1,148 @@
 🏥 Clinic Management System API
 
-A production-ready Clinic Management System API built using ASP.NET Core Web API and Clean Architecture, designed to simulate real-world clinic operations where administrators and reception staff manage patients, doctors, and appointments through a centralized backend system.
-This project focuses on scalability, maintainability, and professional backend engineering practices, not just basic CRUD functionality.
+A production-ready Clinic Management System API built using ASP.NET Core Web API and Clean Architecture. The system is designed to help clinic administrators and reception staff manage doctors, patients, specializations, and appointments through a centralized and scalable backend.
+
+This project focuses on real-world backend engineering practices such as role-based system design, background job processing using Hangfire, and global exception handling.
 
 📌 Project Purpose
+
+The goal of this project is to simulate a real clinic workflow where administrators manage clinic operations digitally instead of manual processes.
+
+The system provides a secure and structured backend that allows managing clinic data efficiently while maintaining scalability and clean architecture principles.
+
+🧱 Architecture
+
+The project follows Clean Architecture and is divided into four layers:
+
+Domain Layer
+Contains core entities and business rules.
+
+Application Layer
+Contains interfaces, DTOs, specifications, and abstraction for business logic.
+
+Infrastructure Layer
+Contains Entity Framework Core implementation, DbContext, Identity configuration, repository implementations, and Hangfire integration.
+
+Presentation Layer (API)
+Contains controllers, endpoints, middleware, and Swagger configuration.
+
+This structure ensures separation of concerns, scalability, and maintainability.
+
+⚙️ Technologies Used
+
+ASP.NET Core Web API
+
+Entity Framework Core
+
+SQL Server
+
+Clean Architecture
+
+Repository Pattern
+
+Specification Pattern
+
+ASP.NET Core Identity
+
+Role-based system preparation
+
+Hangfire (Background Jobs)
+
+Global Exception Handling Middleware
+
+Dependency Injection
+
+LINQ
+
+Async / Await
+
+Soft Delete Pattern
+
+Swagger / OpenAPI
+
+🔐 Authentication
+
+Authentication endpoints allow secure user management and system access.
+
+Available endpoints:
+
+Register Patient
+
+Register Doctor
+
+Login
+
+Get Current User
+
+Check Email Exists
+
+The system is structured and ready for role-based authorization.
+
+👤 Patient Features
+
+Patients can perform the following actions:
+
+Register and login
+
+View doctors
+
+View doctor details
+
+View specializations
+
+Book appointments
+
+View their appointments
+
+Cancel appointments
+
+🛠 Admin Features
+
+Admins have full control over clinic operations.
+
+Doctor Management
+
+Add doctor
+
+Update doctor
+
+View doctors
+
+Activate / Deactivate doctor
+
+Soft delete doctor
+
+Specialization Management
+
+Add specialization
+
+Update specialization
+
+Delete specialization
+
+Appointment Management
+
+View and monitor appointments
+
+🔄 Background Jobs (Hangfire)
+
+Hangfire is integrated to support background job processing, allowing the system to handle scalable and non-blocking operations and making the system ready for future features like notifications and scheduled tasks.
+
+⚠️ Exception Handling
+
+A global exception handling middleware was implemented to handle errors centrally, prevent crashes, and ensure consistent and clean error responses.
+
+📖 API Documentation
+
+Swagger is integrated for testing and documenting the API.
+
+Swagger provides:
+
+Clear endpoint visualization
+
+Request and response models
+
+Easy endpoint testing
 
 The main goal of this system is to provide a structured backend that allows clinic administrators to manage clinic workflow efficiently, while allowing patients to interact with the clinic digitally.
 Unlike simple systems, this project was designed using enterprise-level architecture and patterns to ensure it is production-ready and extensible.
